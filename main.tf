@@ -5,9 +5,12 @@ resource "azurerm_bot_channel_line" "bot_channel_lines" {
   location            = each.value.location
   resource_group_name = each.value.resource_group_name
 
-  line_channel {
-    access_token = each.value.line_channel.access_token
-    secret       = each.value.line_channel.secret
+  dynamic "line_channel" {
+    for_each = each.value.line_channel
+    content {
+      access_token = line_channel.value.access_token
+      secret       = line_channel.value.secret
+    }
   }
 }
 

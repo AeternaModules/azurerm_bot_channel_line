@@ -14,27 +14,11 @@ EOT
     bot_name            = string
     location            = string
     resource_group_name = string
-    line_channel = object({
+    line_channel = list(object({
       access_token = string
       secret       = string
-    })
+    }))
   }))
-  validation {
-    condition = alltrue([
-      for k, v in var.bot_channel_lines : (
-        length(v.line_channel.access_token) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
-  validation {
-    condition = alltrue([
-      for k, v in var.bot_channel_lines : (
-        length(v.line_channel.secret) > 0
-      )
-    ])
-    error_message = "must not be empty"
-  }
   # --- Unconfirmed validation candidates, derived from azurerm_bot_channel_line's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
@@ -67,5 +51,11 @@ EOT
   #   source:    [from validate.BotName: invalid when len(value) > 42]
   # path: bot_name
   #   source:    [from validate.BotName] !regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]*$`).MatchString(v)
+  # path: line_channel.access_token
+  #   condition: length(value) > 0
+  #   message:   must not be empty
+  # path: line_channel.secret
+  #   condition: length(value) > 0
+  #   message:   must not be empty
 }
 
