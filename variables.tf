@@ -19,6 +19,14 @@ EOT
       secret       = string
     }))
   }))
+  validation {
+    condition = alltrue([
+      for k, v in var.bot_channel_lines : (
+        length(v.line_channel) >= 1
+      )
+    ])
+    error_message = "Each line_channel list must contain at least 1 items"
+  }
   # --- Unconfirmed validation candidates, derived from azurerm_bot_channel_line's provider source ---
   # Not auto-enabled: either a bespoke provider validator we can't safely translate,
   # or a path that crosses a list-typed block (needs its own for_each wrapping).
